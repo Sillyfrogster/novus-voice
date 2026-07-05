@@ -1,6 +1,6 @@
 # novus-voice
 
-Offline neural text-to-speech engine for [Novus](https://github.com/Sillyfrogster/novus), the desktop ebook reader. It turns sentences into natural-sounding speech on-device. Itnd reports **word-level timing** for every word it speaks.
+Offline neural text-to-speech engine for [Novus](https://github.com/Sillyfrogster/novus), the desktop ebook reader. It turns sentences into natural-sounding speech on-device and reports **word-level timing** for every word it speaks.
 
 - **Fully offline.** Synthesis runs on the local CPU; nothing leaves the machine.
 - **Word timings built in.** Each reply maps every spoken word back to exact character offsets in the input text.
@@ -12,7 +12,7 @@ Offline neural text-to-speech engine for [Novus](https://github.com/Sillyfrogste
 novus-voice is a *sidecar*: a helper process that the app launches and supervises, communicating over stdin/stdout. It is deliberately not compiled into the app:
 
 - **License isolation.** Novus is MIT; this engine links GPL components. A process boundary keeps the licenses separate.
-- **Fault isolation.** Synthesis won't affect crashing. 
+- **Fault isolation.** A crash in the engine never takes the app down.
 - **Memory.** Loaded voice models use RAM; ending the process returns all of it the moment it's stopped.
 
 The current engine is [Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M), an 82-million-parameter TTS model, run via [onnxruntime](https://onnxruntime.ai/) with [misaki-rs](https://crates.io/crates/misaki-rs) for grapheme-to-phoneme conversion and [espeak-ng](https://github.com/espeak-ng/espeak-ng) as the fallback for out-of-vocabulary words.
@@ -38,11 +38,11 @@ One JSON request per stdin line; one JSON reply per stdout line, matched by `id`
 }
 ```
 
-`startChar`/`endChar` index into the exact `text` string of the request, so the caller can map timings onto its own document without string matching. `words` is empty for voices whose model has no duration outputs. callers should degrade to sentence-level highlighting.
+`startChar`/`endChar` index into the exact `text` string of the request, so the caller can map timings onto its own document without string matching. `words` is empty for voices whose model has no duration outputs; callers should degrade to sentence-level highlighting.
 
 ## Voice packs
 
-Voices ship separately as packs. a zip containing the model, voice style files, and a `config.json`:
+Voices ship separately as packs: a zip containing the model, voice style files, and a `config.json`:
 
 ```jsonc
 {
