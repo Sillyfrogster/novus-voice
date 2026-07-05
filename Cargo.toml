@@ -1,0 +1,23 @@
+[package]
+name = "novus-voice"
+version = "0.1.0"
+edition = "2021"
+description = "Novus voice sidecar. offline neural TTS with word-level timings, JSON over stdio"
+license = "GPL-3.0-or-later"
+publish = false
+
+[dependencies]
+anyhow = "1"
+base64 = "0.22"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+ort = "2.0.0-rc.12"
+misaki-rs = { version = "0.3", default-features = false }
+
+[features]
+default = ["espeak"]
+espeak = ["misaki-rs/espeak"]
+
+[profile.release]
+lto = true
+strip = true
