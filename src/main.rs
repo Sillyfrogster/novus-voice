@@ -105,7 +105,7 @@ fn audio_body(result: kokoro::Synthesis) -> Body {
     }
 }
 
-fn emit(out: &mut impl Write, reply: &Reply) {.
+fn emit(out: &mut impl Write, reply: &Reply) {
     match serde_json::to_string(reply) {
         Ok(json) => {
             if writeln!(out, "{json}").and_then(|_| out.flush()).is_err() {
